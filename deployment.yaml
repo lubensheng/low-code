@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: low-code
+  namespace: react-project
+  labels:
+    app: low-code
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: low-code
+  template:
+    metadata:
+      name: low-code
+      labels:
+        app: low-code
+    spec:
+      containers:
+      - image: low-code:1.0
+        name: low-code
+        imagePullPolicy: IfNotPresent
+        volumeMounts: 
+        - name: low-code-nginx-config
+          mountPath: /etc/nginx/conf.d/low-code.conf
+          subPath: low-code.conf
+      volumes:
+      - name: low-code-nginx-config
+        configMap:
+          name: low-code-nginx-config
+          items:
+          - key: low-code.conf
+            path:  low-code.conf
+           
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: low-code-service
+  namespace: react-project
+spec:
+  type: NodePort
+  selector:
+    app: low-code
+  ports: 
+  - name: low-code-service
+    protocol: TCP
+    port: 8091
+    targetPort: 8091
+    nodePort: 30314

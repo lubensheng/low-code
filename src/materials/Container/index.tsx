@@ -41,6 +41,7 @@ function Container({ children, id }: ContainerProps) {
     <div
       ref={drop}
       className="min-h-[100px] border-[#000] border-[1px] p-[10px]"
+      data-component-id={id}
     >
       {children}
     </div>

@@ -1,0 +1,18 @@
+FROM node as build-stage
+
+WORKDIR /home/low-code
+
+COPY . .
+
+RUN npm i
+
+RUN npm run build
+
+
+FROM nginx as run-stage
+
+WORKDIR /home/low-code
+
+COPY --from=build-stage  /home/low-code/dist .
+
+CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
