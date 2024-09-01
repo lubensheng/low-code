@@ -12,7 +12,9 @@ function Material() {
   return (
     <div>
       {components.map((c) => {
-        return <MaterialItem key={c.name} name={c.name} />;
+        return c.name === "Page" ? null : (
+          <MaterialItem desc={c.desc} key={c.name} name={c.name} />
+        );
       })}
     </div>
   );

@@ -4,6 +4,7 @@ import {
   getComponentById,
   useComponentsStore,
 } from "../../editor/stores/components/components";
+import { useComponentConfigStore } from "../../editor/stores/components/component-config";
 
 interface HoverMaskProps {
   componentId: number;
@@ -11,7 +12,7 @@ interface HoverMaskProps {
   containerClassName: string;
 }
 
-interface Position {
+export interface Position {
   left: number;
   top: number;
   width: number;
@@ -30,6 +31,7 @@ function HoverMask(props: HoverMaskProps) {
     labelLeft: 0,
     labelTop: 0,
   });
+  const { componentConfig } = useComponentConfigStore();
   const { components } = useComponentsStore();
   const name = useMemo(() => {
     return getComponentById(componentId, components);
@@ -59,8 +61,18 @@ function HoverMask(props: HoverMaskProps) {
   };
 
   useEffect(() => {
+    const resizeHandler = () => {
+      updatePosition();
+    };
+    window.addEventListener("resize", resizeHandler);
+    return () => {
+      window.removeEventListener("resize", resizeHandler);
+    };
+  }, []);
+
+  useEffect(() => {
     updatePosition();
-  }, [componentId]);
+  }, [componentId, components]);
 
   return ReactDOM.createPortal(
     <div
@@ -82,7 +94,7 @@ function HoverMask(props: HoverMaskProps) {
         style={{
           position: "absolute",
           left: position.labelLeft,
-          top: position.labelTop <= 0 ? position.labelTop + 20 : position.labelTop,
+          top: position.labelTop <= 0 ? position.labelTop + 20 : 0,
           fontSize: "14px",
           zIndex: 13,
           display: !position.width || position.width < 10 ? "none" : "inline",
@@ -99,7 +111,7 @@ function HoverMask(props: HoverMaskProps) {
             whiteSpace: "nowrap",
           }}
         >
-          {name?.name}
+          {name?.name ? componentConfig[name.name].desc : null}
         </div>
       </div>
     </div>,

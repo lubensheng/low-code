@@ -1,14 +1,14 @@
-import type { PropsWithChildren } from "react";
+import type { CSSProperties, PropsWithChildren } from "react";
 import { useComponentsStore } from "../../editor/stores/components/components";
 import { useComponentConfigStore } from "../../editor/stores/components/component-config";
 import { useDrop } from "react-dnd";
-import { message } from "antd";
 
 interface ContainerProps extends PropsWithChildren {
   id: number;
+  styles: CSSProperties
 }
 
-function Container({ children, id }: ContainerProps) {
+function Container({ children, id, styles }: ContainerProps) {
   const { addComponent } = useComponentsStore();
   const { componentConfig } = useComponentConfigStore();
 
@@ -18,8 +18,6 @@ function Container({ children, id }: ContainerProps) {
       if (monitor.didDrop()) {
         return;
       }
-      message.success(item.type);
-
       const config = componentConfig[item.type];
       const props = config.defaultProps;
 
@@ -27,6 +25,7 @@ function Container({ children, id }: ContainerProps) {
         {
           id: new Date().getTime(),
           name: item.type,
+          desc: config.desc,
           props,
         },
         id
@@ -42,6 +41,7 @@ function Container({ children, id }: ContainerProps) {
       ref={drop}
       className="min-h-[100px] border-[#000] border-[1px] p-[10px]"
       data-component-id={id}
+      style={styles}
     >
       {children}
     </div>

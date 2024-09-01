@@ -9,10 +9,10 @@ export interface ButtonProps {
   styles: CSSProperties
 }
 
-function Button({ type, text, id, styles }: ButtonProps) {
+function ButtonPreview({ type, text, styles }: ButtonProps) {
   return (
-    <AntdButton data-component-id={id} style={styles} type={type}>{text}</AntdButton>
+    <AntdButton style={styles} type={type}>{text}</AntdButton>
   );
 }
 
-export default Button;
+export default ButtonPreview;

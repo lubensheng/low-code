@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function isSimpleType(value) {
+        if (value === null) {
+          return true;
+        }
+
+        return (
+          typeof value === "bigint" ||
+          typeof value === "boolean" ||
+          typeof value === "string" ||
+          typeof value === "number" ||
+          typeof value === "symbol" ||
+          typeof value === "undefined" ||
+          typeof value === "symbol" ||
+          typeof value === 'function'
+        );
+      }
+
+      function deepClone(value) {
+        if (isSimpleType(value)) {
+          return value;
+        }
+        let copyValue;
+        if (Array.isArray(value)) {
+          copyValue = [];
+          value.forEach(v => {
+            let v1 = deepClone(v);
+            copyValue.push(v1);
+          })
+          return copyValue;
+        }
+
+        if (typeof value === 'object') {
+          copyValue = {};
+          Object.keys(value).forEach(key => {
+            copyValue[key] = deepClone(value[key])
+          })
+          return copyValue;
+        }
+      }
+
+      let c = [1, { c: {  a: { b: 1 } } }, 5, [7, {c: 2}], () => {}];
+      let d = deepClone(c);
+      console.log(d);
+      c[0] = 2;
+      c[1].c.a.b = 2;
+      c[2] = 2;
+      c[3] = 55;
+      c[4] = (a) => { console.log(1) }
+      console.log(c);
+      console.log(d)
+    </script>
+  </body>
+</html>

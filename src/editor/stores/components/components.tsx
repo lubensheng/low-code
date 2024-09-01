@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { create } from "zustand";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -6,18 +7,29 @@ export interface Component {
   name: string;
   children?: Component[];
   props: any;
+  styles?: CSSProperties;
   parentId?: number;
   desc?: string;
 }
 
-interface State {
+export interface State {
   components: Component[];
+  curComponentId?: number;
+  curComponent?: Component;
+  mode: "edit" | "preview";
 }
 
 interface Action {
   addComponent: (component: Component, parentId?: number) => void;
   deleteComponent: (componentId: number) => void;
   updateComponentProps: (componentId: number, props: any) => void;
+  setCurComponentId: (componentId?: number) => void;
+  updateComponentStyles: (
+    componentId: number,
+    styles: CSSProperties,
+    replace?: boolean
+  ) => void;
+  setMode: (mode: State["mode"]) => void;
 }
 
 export const useComponentsStore = create<State & Action>((set) => ({
@@ -29,6 +41,7 @@ export const useComponentsStore = create<State & Action>((set) => ({
       desc: "页面",
     },
   ],
+  mode: "edit",
   addComponent(component, parentId) {
     set((state) => {
       if (parentId) {
@@ -64,26 +77,55 @@ export const useComponentsStore = create<State & Action>((set) => ({
             (c) => c.id === componentId
           );
           parentComponent.children!.splice(index, 1);
+
+          if (!parentComponent.children!.length) {
+            parentComponent.children = undefined;
+          }
         }
       } else {
         const index = components.findIndex((c) => c.id === componentId);
         components.splice(index, 1);
       }
-      return { components: { ...components } };
+      return { components: [...components] };
     });
   },
   updateComponentProps(componentId, props) {
-    console.log(componentId);
-    console.log(props);
     set((state) => {
       const component = getComponentById(componentId, state.components);
       if (component) {
         component.props = { ...component.props, ...props };
-
         return { components: [...state.components] };
       }
-
       return { components: [...state.components] };
+    });
+  },
+  setCurComponentId(componentId) {
+    set((state) => {
+      return {
+        curComponentId: componentId,
+        curComponent: componentId
+          ? getComponentById(componentId, state.components) || undefined
+          : undefined,
+      };
+    });
+  },
+  updateComponentStyles(componentId, styles, replace) {
+    set((state) => {
+      const component = getComponentById(componentId, state.components);
+      if (component) {
+        component.styles = replace
+          ? { ...styles }
+          : component.styles
+          ? { ...component.styles, ...styles }
+          : { ...styles };
+        return { components: [...state.components] };
+      }
+      return { components: [...state.components] };
+    });
+  },
+  setMode(mode) {
+    set(() => {
+      return { mode };
     });
   },
 }));

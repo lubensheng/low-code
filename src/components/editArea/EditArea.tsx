@@ -6,9 +6,11 @@ import {
 } from "../../editor/stores/components/components";
 import { useComponentConfigStore } from "../../editor/stores/components/component-config";
 import HoverMask from "../hoverMask";
+import ClickMask from "../clickMask";
 
 function EditArea() {
-  const { components } = useComponentsStore();
+  const { components, curComponentId, setCurComponentId, mode } =
+    useComponentsStore();
   const { componentConfig } = useComponentConfigStore();
   const [hoverComponentId, setHoverComponentId] = useState<
     number | undefined
@@ -17,7 +19,7 @@ function EditArea() {
   const renderComponents = (components: Component[]): ReactNode => {
     return components.map((c) => {
       const config = componentConfig?.[c.name];
-      if (!config) {
+      if (!config || mode === 'preview') {
         return null;
       }
       return React.createElement(
@@ -28,6 +30,7 @@ function EditArea() {
           name: c.name,
           ...config.defaultProps,
           ...c.props,
+          styles: c.styles
         },
         renderComponents(c.children || [])
       );
@@ -46,6 +49,18 @@ function EditArea() {
     }
   };
 
+  const handleClick: MouseEventHandler = (e) => {
+    const path = e.nativeEvent.composedPath();
+    for (let i = 0; i < path.length; i++) {
+      const node = path[i] as HTMLElement;
+      const componentId = node.dataset?.componentId;
+      if (componentId) {
+        setCurComponentId(+componentId === curComponentId ? undefined : +componentId);
+        return;
+      }
+    }
+  };
+
   return (
     <div
       className="h-[100%] edit-area"
@@ -53,13 +68,21 @@ function EditArea() {
       onMouseLeave={() => {
         setHoverComponentId(undefined);
       }}
+      onClick={handleClick}
     >
       {renderComponents(components)}
-      {hoverComponentId && (
+      {hoverComponentId && hoverComponentId !== curComponentId && (
         <HoverMask
           containerClassName="edit-area"
           wrapperClassName="portal-wrapper"
           componentId={hoverComponentId}
+        />
+      )}
+      {curComponentId && (
+        <ClickMask
+          containerClassName="edit-area"
+          wrapperClassName="portal-wrapper"
+          componentId={curComponentId}
         />
       )}
       <div className="portal-wrapper"></div>

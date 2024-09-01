@@ -1,21 +1,21 @@
-import { message } from "antd";
-import { type PropsWithChildren } from "react";
+import type { CSSProperties, PropsWithChildren } from "react";
 import { useDrop } from "react-dnd";
 import { useComponentsStore } from "../../editor/stores/components/components";
 import { useComponentConfigStore } from "../../editor/stores/components/component-config";
 
 interface PageViewProps extends PropsWithChildren {
   id: number;
+  styles: CSSProperties
 }
 
-function Page({ children, id }: PageViewProps) {
+function Page({ children, id, styles = {} }: PageViewProps) {
   const { addComponent } = useComponentsStore();
   const { componentConfig } = useComponentConfigStore();
   const [{ canDrop }, drop] = useDrop(() => ({
     accept: ["Button", "Container"],
     drop: (item: { type: string }, monitor) => {
-      message.success(item.type);
       if (monitor.didDrop()) {
+        console.log(canDrop);
         return;
       }
       const config = componentConfig[item.type];
@@ -24,6 +24,7 @@ function Page({ children, id }: PageViewProps) {
         {
           id: new Date().getTime(),
           name: item.type,
+          desc: config.desc,
           props,
         },
         id
@@ -33,12 +34,9 @@ function Page({ children, id }: PageViewProps) {
       canDrop: monitor.canDrop(),
     }),
   }));
-
-  console.log(canDrop);
-
   
   return (
-    <div ref={drop} data-component-id={id} className="p-[20] h-[100%] box-border">
+    <div ref={drop} style={{ ...styles }} data-component-id={id} className="p-[20px] h-[100%] box-border">
       {children}
     </div>
   );
