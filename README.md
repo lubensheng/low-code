@@ -8,5 +8,7 @@
 
 ### 体验地址 
 
+> 部署是采用docker + k8s 部署
+
 http://benben.pink:30314/
 
