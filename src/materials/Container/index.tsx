@@ -16,6 +16,7 @@ function Container({ children, id, styles }: ContainerProps) {
     accept: ["Button", "Container"],
     drop: (item: { type: string }, monitor) => {
       if (monitor.didDrop()) {
+        console.log(canDrop);
         return;
       }
       const config = componentConfig[item.type];
@@ -35,7 +36,7 @@ function Container({ children, id, styles }: ContainerProps) {
       canDrop: monitor.canDrop(),
     }),
   }));
-  console.log(canDrop);
+
   return (
     <div
       ref={drop}

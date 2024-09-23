@@ -9,6 +9,7 @@ import Preview from "./components/preview";
 
 function App() {
   const { mode } = useComponentsStore();
+  
   return (
     <div className="h-[100vh] flex flex-col w-[100%]">
       <div className="h-[60px] w-[100%] flex items-center border-b-[1px] border-[#e5e7eb]">

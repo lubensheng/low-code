@@ -20,7 +20,7 @@
           typeof value === "symbol" ||
           typeof value === "undefined" ||
           typeof value === "symbol" ||
-          typeof value === 'function'
+          typeof value === "function"
         );
       }
 
@@ -31,32 +31,130 @@
         let copyValue;
         if (Array.isArray(value)) {
           copyValue = [];
-          value.forEach(v => {
+          value.forEach((v) => {
             let v1 = deepClone(v);
             copyValue.push(v1);
-          })
+          });
           return copyValue;
         }
 
-        if (typeof value === 'object') {
+        if (typeof value === "object") {
           copyValue = {};
-          Object.keys(value).forEach(key => {
-            copyValue[key] = deepClone(value[key])
-          })
+          Object.keys(value).forEach((key) => {
+            copyValue[key] = deepClone(value[key]);
+          });
           return copyValue;
         }
       }
 
-      let c = [1, { c: {  a: { b: 1 } } }, 5, [7, {c: 2}], () => {}];
+      let c = [1, { c: { a: { b: 1 } } }, 5, [7, { c: 2 }], () => {}];
       let d = deepClone(c);
-      console.log(d);
+
       c[0] = 2;
       c[1].c.a.b = 2;
       c[2] = 2;
       c[3] = 55;
-      c[4] = (a) => { console.log(1) }
-      console.log(c);
-      console.log(d)
+      c[4] = (a) => {
+        console.log(1);
+      };
+
+      const nodes = [
+        {
+          parentId: null,
+          id: 1,
+          text: 1,
+        },
+        {
+          parentId: null,
+          id: 2,
+          text: 2,
+        },
+        {
+          parentId: 1,
+          id: 3,
+          text: 3,
+        },
+        {
+          parentId: 2,
+          id: 4,
+          text: 4,
+        },
+        {
+          parentId: 3,
+          id: 5,
+          text: 5,
+        },
+      ];
+
+      function arrayToTreeRec(nodes, parentId = null) {
+        return nodes
+          .filter((node) => node.parentId === parentId)
+          .map((node) => ({
+            ...node,
+            children: arrayToTreeRec(nodes, node.id),
+          }));
+      }
+
+      const tree = arrayToTreeRec(nodes, null);
+      // console.log(tree);
+
+      const d1 = {
+        name: "d1",
+        say(a, c) {
+          console.log(a, c);
+          console.log(this.name);
+        },
+      };
+
+      const f1 = {
+        name: "f1",
+        say(a, c) {
+          console.log(a, c);
+          console.log(this.name);
+        },
+      };
+
+      let f = f1.say.bind(d1, 3, 4);
+      // f();
+
+      let fun1 = f1.say;
+
+      function a() {
+        try {
+          console.log("try执行了");
+          throw new Error('xxx');
+          return "try";
+        } catch (e) {
+          console.log("error执行了");
+          return "error";
+        } finally {
+          console.log("finally执行了");
+          return "finally";
+        }
+      }
+      let result = a();
+      // console.log('result:', result)
+
+
+
+      function fun1(str1, str2) {
+        let ans = '';
+
+        for(let i = 0; i < str1.length; i++) {
+          let a = str1[i];
+          if (str2[i]) {
+            let b = str2[i];
+            if (a === b) {
+              ans += a;
+            } else {
+              return ans;
+            }
+          } else {
+            return ans;
+          }
+        }
+        return ans;
+      }
     </script>
   </body>
 </html>

@@ -15,6 +15,10 @@ export interface ComponentSetter {
   [key: string]: any;
 }
 
+export interface ComponentEvent {
+  name: string;
+  label: string;
+}
 
 export interface ComponentCssSetter {
   name: string;
@@ -31,6 +35,7 @@ export interface ComponentConfig {
   cssSetter?: ComponentCssSetter[];
   component: any;
   previewComponent: any;
+  events?: ComponentEvent[];
 }
 
 interface State {
@@ -60,7 +65,7 @@ export const useComponentConfigStore = create<State & Action>((set) => ({
           type: "inputNumber",
         },
       ],
-      previewComponent: ContainerPreview
+      previewComponent: ContainerPreview,
     },
     Button: {
       name: "Button",
@@ -98,14 +103,24 @@ export const useComponentConfigStore = create<State & Action>((set) => ({
           label: "高度",
           type: "inputNumber",
         },
-      ]
+      ],
+      events: [
+        {
+          name: "onClick",
+          label: "点击事件",
+        },
+        {
+          name: "onDoubleClick",
+          label: "双击事件",
+        },
+      ],
     },
     Page: {
       name: "Page",
       desc: "主页",
       defaultProps: {},
       component: Page,
-      previewComponent: PagePreview
+      previewComponent: PagePreview,
     },
   },
   registerComponent: (name, componentConfig) => {
